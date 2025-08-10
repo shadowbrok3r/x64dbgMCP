@@ -145,7 +145,7 @@ DWORD WINAPI HttpServerThread32(LPVOID) {
                 if (path == "/ExecCommand") {
                     std::string cmd = qp["cmd"]; if (cmd.empty() && !body.empty()) cmd = body; if (cmd.empty()) { sendHttpResponse32(clientSocket,400,"text/plain","Missing command parameter"); goto close_client; }
                     char tempPath[MAX_PATH]; GetTempPathA(MAX_PATH, tempPath); std::string logFile = std::string(tempPath)+"x32dbg_cmd_"+std::to_string(GetTickCount())+".log";
-                    std::string redirectCmd = "LogRedirect \""+logFile+"\""; DbgCmdExecDirect(redirectCmd.c_str()); Sleep(50); DbgCmdExecDirect("LogClear"); Sleep(50); bool success = DbgCmdExecDirect(cmd.c_str()); Sleep(200); DbgCmdExecDirect("LogRedirectStop"); Sleep(100);
+                    std::string redirectCmd = "LogRedirect \""+logFile+"\""; DbgCmdExecDirect(redirectCmd.c_str()); Sleep(50); DbgCmdExecDirect("ClearLog"); Sleep(50); bool success = DbgCmdExecDirect(cmd.c_str()); Sleep(200); DbgCmdExecDirect("LogRedirectStop"); Sleep(100);
                     std::string output; for (int r=0;r<5;r++){ std::ifstream f(logFile, std::ios::binary); if(f.is_open()){ std::stringstream buf; buf<<f.rdbuf(); output=buf.str(); if(!output.empty()) break; } Sleep(100);} DeleteFileA(logFile.c_str());
                     if (!output.empty()) {
                         auto scrub=[&](const char* marker){ size_t p=0; while((p=output.find(marker,p))!=std::string::npos){ size_t e=output.find('\n',p); if(e!=std::string::npos) output.erase(p,e-p+1); else { output.erase(p); break; } } }; scrub("Log will be redirected to"); scrub("Log redirection stopped"); scrub("Log cleared");

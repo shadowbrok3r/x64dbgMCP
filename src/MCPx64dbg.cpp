@@ -300,7 +300,7 @@ DWORD WINAPI HttpServerThread(LPVOID lpParam) {
                     Sleep(50);
                     
                     // Clear any existing content in the log
-                    DbgCmdExecDirect("LogClear");
+                    DbgCmdExecDirect("ClearLog");
                     
                     // Small delay after clearing
                     Sleep(50);
